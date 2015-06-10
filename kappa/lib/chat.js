@@ -1,9 +1,12 @@
 var irc = require('irc');
+var util = require("util");
+var EventEmitter = require("events").EventEmitter;
 var Twitch = require('./twitch');
 
 var Chat = function() {
+    EventEmitter.call(this);
     this.twitch = new Twitch();
-    this.kappas = ['Kappa', 'Keepo', 'KappaHD'];
+    this.kappas = ['Kappa', 'Keepo'];
 
     this.nick = this.generateNick();
     this.password = 'blah'; // can be anything, but twitch defaults to this
@@ -22,6 +25,8 @@ var Chat = function() {
     }.bind(this));
 };
 
+util.inherits(Chat, EventEmitter);
+
 Chat.prototype.generateNick = function() {
     return "justinfan" + Math.round(Math.random()*999999);
 };
@@ -38,7 +43,8 @@ Chat.prototype.containsKappa = function(message) {
 Chat.prototype.message = function(from, to, message) {
     if(this.containsKappa(message)) {
         console.log('>>>>' + from + ' => ' + to + ': ' + message);
+        this.emit('kappa', {nick: from, message: message});
     }
 };
 
-var chat = new Chat();
+module.exports = Chat;

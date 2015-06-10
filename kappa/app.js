@@ -9,10 +9,38 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+var server = require('http').Server(app);
+
+var Chat = require('./lib/chat');
+
+
+
+// WebSockets
+var io = require('socket.io')(server);
+io.on('connection', function(socket) {
+    console.log("Client connected.");
+
+    socket.on('disconnect', function() {
+        console.log("Lost client.");
+    });
+});
+
+
+var chat = new Chat();
+chat.on('kappa', function(kappa) {
+  io.emit('kappa', kappa);
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
+// Access to db and config in routes
+app.use(function (req, res, next) {
+   req.io = io;
+   next();
+});
+
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -56,5 +84,6 @@ app.use(function(err, req, res, next) {
   });
 });
 
+server.listen(3000);
 
 module.exports = app;

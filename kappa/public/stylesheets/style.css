@@ -6,3 +6,9 @@ body {
 a {
   color: #00B7FF;
 }
+
+#kappa-list {
+  list-style: none;
+  height: 500px;
+  overflow: scroll;
+}
