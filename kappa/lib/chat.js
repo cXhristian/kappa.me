@@ -1,11 +1,17 @@
 var irc = require('irc');
 var util = require("util");
 var EventEmitter = require("events").EventEmitter;
-var Twitch = require('./twitch');
+var twitch = require('./twitch');
+
+var emotes = [];
+// Let's just hope this finishes before any clients start spitting out kappas
+// enterprise level coding
+twitch.emoticons(function(data) {
+    emotes = data;
+});
 
 var ChatManager = function() {
     EventEmitter.call(this);
-    this.twitch = new Twitch();
     this.maxClients = 5;
     this.maxChannels = 10;
     this.clients = [];
@@ -27,9 +33,8 @@ ChatManager.prototype.reset = function() {
 };
 
 ChatManager.prototype.start = function() {
-    this.twitch.streams(function(channels) {
+    twitch.streams(function(channels) {
         for(var i = 0; i < this.maxClients; i++) {
-            console.log(i, channels.slice(i * this.maxChannels, (i + 1) * this.maxChannels))
             var client = new Chat(channels.slice(i * this.maxChannels, (i + 1) * this.maxChannels));
             client.on('kappa', function(data) {
                 // Probably a horrible way to handle events
@@ -77,8 +82,22 @@ Chat.prototype.containsKappa = function(message) {
 Chat.prototype.message = function(from, to, message) {
     if(this.containsKappa(message)) {
         console.log('>>>>' + from + ' => ' + to + ': ' + message);
-        this.emit('kappa', {nick: from, message: message});
+        this.emit('kappa', {nick: from, message: this.emoteParser(message)});
     }
+};
+
+Chat.prototype.emoteParser = function(message) {
+    for (var i = 0; i < emotes.length; i++) {
+        if(emotes[i].id == 10) {
+            // awful hack
+            continue;
+        }
+        var re = new RegExp(emotes[i].code,"g");
+        if(message.match(re)) {
+            message = message.replace(re, '<img src="https://static-cdn.jtvnw.net/emoticons/v1/' + emotes[i].id + '/1.0" alt="' + emotes[i].code + '">');
+        }
+    }
+    return message;
 };
 
 Chat.prototype.disconnect = function() {

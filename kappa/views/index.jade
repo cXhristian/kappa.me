@@ -17,8 +17,6 @@ block content
         counter.textContent = kappas;
         nick = data.nick;
         message = data.message;
-        var message = message.replace(/Kappa/g, '<img src="https://static-cdn.jtvnw.net/emoticons/v1/25/1.0" alt="Kappa">');
-        var message = message.replace(/Keepo/g, '<img src="https://static-cdn.jtvnw.net/emoticons/v1/1902/1.0" alt="Kappa">');
         var li = document.createElement('li');
         li.innerHTML = nick + ': ' + message;
         list.appendChild(li);

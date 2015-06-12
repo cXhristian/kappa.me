@@ -6,7 +6,7 @@ var Twitch = function() {
 
 Twitch.prototype.streams = function(callback, limit) {
     var url = this.generateUrl('streams', {
-        limit: limit || 10,
+        limit: limit || 10
     });
     this.request(url, function(streamsJSON) {
         var channels = [];
@@ -16,6 +16,16 @@ Twitch.prototype.streams = function(callback, limit) {
             channels.push('#' + streams[stream]['channel']['name']);
         }
         callback(channels);
+    });
+};
+
+Twitch.prototype.emoticons = function(callback, emotesets) {
+    // TODO: Support multiple sets
+    var url = this.generateUrl('chat/emoticon_images', {
+        emotesets: emotesets || 0
+    });
+    this.request(url, function(emoteJSON) {
+        callback(emoteJSON['emoticon_sets'][0]);
     });
 };
 
@@ -46,4 +56,4 @@ Twitch.prototype.request = function(url, callback) {
     });
 };
 
-module.exports = Twitch;
+module.exports = new Twitch();
