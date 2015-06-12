@@ -11,7 +11,7 @@ var users = require('./routes/users');
 var app = express();
 var server = require('http').Server(app);
 
-var Chat = require('./lib/chat');
+var ChatManager = require('./lib/chat');
 
 
 
@@ -26,7 +26,7 @@ io.on('connection', function(socket) {
 });
 
 
-var chat = new Chat();
+var chat = new ChatManager();
 chat.on('kappa', function(kappa) {
   io.emit('kappa', kappa);
 });

@@ -4,10 +4,9 @@ var Twitch = function() {
     this.api = 'https://api.twitch.tv/kraken/';
 };
 
-Twitch.prototype.streams = function(callback) {
+Twitch.prototype.streams = function(callback, limit) {
     var url = this.generateUrl('streams', {
-        limit: 10,
-        on_site: 1 // no idea what this does
+        limit: limit || 10,
     });
     this.request(url, function(streamsJSON) {
         var channels = [];
