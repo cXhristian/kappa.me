@@ -2,11 +2,19 @@ extends layout
 
 block content
   h1 Twitch Chat Experience
+  i Displaying Kappas from the top 50 channels on twitch.tv
+  div.kappa-counter
+    | Kappa counter: 
+    b
   ul#kappa-list
   script.
     var socket = io();
     var list = document.getElementById('kappa-list');
+    var counter = document.querySelector('.kappa-counter b');
+    var kappas = 0;
     socket.on('kappa', function (data) {
+        kappas++;
+        counter.textContent = kappas;
         nick = data.nick;
         message = data.message;
         var message = message.replace(/Kappa/g, '<img src="https://static-cdn.jtvnw.net/emoticons/v1/25/1.0" alt="Kappa">');
@@ -15,4 +23,5 @@ block content
         li.innerHTML = nick + ': ' + message;
         list.appendChild(li);
         list.scrollTop = list.scrollHeight;
+
     });
