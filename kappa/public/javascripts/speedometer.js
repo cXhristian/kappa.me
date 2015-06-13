@@ -1,8 +1,16 @@
 var Speedometer = function() {
   this.wiggleMax = 4;
   this.startDate = new Date();
-  this.score = 0; // Kappas
+  this.kappas = 0;
   this.maxScore = 100; // tweak pls
+
+  this.kpm = 0;
+  // Number of seconds to sample kappas from
+  this.seconds = 1;
+  this.beta = 0.2;
+
+  this.steps = 1;
+  this.smoothKPM = this.kpm;
 
   this.start = -225;
   this.maxPosition = 270;
@@ -11,6 +19,9 @@ var Speedometer = function() {
   this.canvas = document.getElementById('speedometer');
   this.ctx = this.canvas.getContext('2d');
   window.requestAnimationFrame(this.draw.bind(this));
+
+  setInterval(this.calculateKPM.bind(this), this.seconds * 1000);
+  this.calculateKPM();
 };
 
 Speedometer.prototype.createImages = function() {
@@ -18,12 +29,24 @@ Speedometer.prototype.createImages = function() {
   this.background.src = '/images/speedometer.png';
 };
 
-Speedometer.prototype.kpm = function() {
-    return Math.round(this.score / ((new Date() - this.startDate) / (1000 * 60)));
+Speedometer.prototype.kappa = function() {
+  // New kappa!
+  this.kappas++;
+};
+
+Speedometer.prototype.calculateKPM = function() {
+  this.kpm = Math.round((1 - this.beta) * this.kpm + this.beta *(this.kappas / this.seconds) * 60);
+  this.kappas = 0;
 };
 
 Speedometer.prototype.position = function() {
-  var percentage = Math.min(this.kpm() / this.maxScore, 1);
+  if(this.kpm > this.smoothKPM) {
+    this.smoothKPM += this.steps;
+  }
+  else {
+    this.smoothKPM -= this.steps;
+  }
+  var percentage = Math.min(this.smoothKPM / this.maxScore, 1);
 
   var pos = this.maxPosition * percentage + this.start;
   return pos + this.wiggle();
@@ -48,7 +71,7 @@ Speedometer.prototype.draw = function() {
 
   // KPM
   this.ctx.font = "35px serif";
-  this.ctx.fillText(this.kpm() + " KPM", 140, 340);
+  this.ctx.fillText(this.kpm + " KPM", 140, 340);
 
   window.requestAnimationFrame(this.draw.bind(this));
 };

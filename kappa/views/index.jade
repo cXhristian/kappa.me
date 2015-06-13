@@ -16,7 +16,7 @@ block content
     var kappas = 0;
     socket.on('kappa', function (data) {
         kappas++;
-        speedometer.score = kappas;
+        speedometer.kappa();
         counter.textContent = kappas;
         nick = data.nick;
         message = data.message;
