@@ -14,12 +14,9 @@ block content
     var list = document.getElementById('kappa-list');
     var counter = document.querySelector('.kappa-counter b');
     var kappas = 0;
-    var start = new Date();
     socket.on('kappa', function (data) {
         kappas++;
-        var delta = new Date() - start;
-        var kpm = Math.round(kappas / ((new Date() - start) / (1000 * 60)));
-        speedometer.score = kpm;
+        speedometer.score = kappas;
         counter.textContent = kappas;
         nick = data.nick;
         message = data.message;

@@ -1,6 +1,7 @@
 var Speedometer = function() {
   this.wiggleMax = 4;
-  this.score = 0; // KPM (Kappa per minute)
+  this.startDate = new Date();
+  this.score = 0; // Kappas
   this.maxScore = 100; // tweak pls
 
   this.start = -225;
@@ -17,8 +18,12 @@ Speedometer.prototype.createImages = function() {
   this.background.src = '/images/speedometer.png';
 };
 
+Speedometer.prototype.kpm = function() {
+    return Math.round(this.score / ((new Date() - this.startDate) / (1000 * 60)));
+};
+
 Speedometer.prototype.position = function() {
-  var percentage = Math.min(this.score / this.maxScore, 1);
+  var percentage = Math.min(this.kpm() / this.maxScore, 1);
 
   var pos = this.maxPosition * percentage + this.start;
   return pos + this.wiggle();
@@ -43,7 +48,7 @@ Speedometer.prototype.draw = function() {
 
   // KPM
   this.ctx.font = "35px serif";
-  this.ctx.fillText(this.score + " KPM", 140, 340);
+  this.ctx.fillText(this.kpm() + " KPM", 140, 340);
 
   window.requestAnimationFrame(this.draw.bind(this));
 };
