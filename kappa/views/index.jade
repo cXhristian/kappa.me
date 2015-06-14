@@ -1,13 +1,16 @@
 extends layout
 
 block content
-  h1 Twitch Chat Experience
-  i Displaying Kappas from the top 50 channels on twitch.tv
-  div#kappa-counter
-    | Kappa counter: 
-    b 0
-  canvas(id="speedometer" width="400" height="400")
-  ul#kappa-list
+  .left
+    ul#kappa-list
+  .right
+    h1 Twitch Chat Experience
+    i Displaying Kappas from the top 50 channels on twitch.tv
+    #kappa-counter
+      | Kappa counter: 
+      b 0
+    canvas(id="speedometer" width="400" height="400")
+  script(src="/javascripts/speedometer.js")
   script.
     var socket = io();
     var speedometer = new Speedometer();
