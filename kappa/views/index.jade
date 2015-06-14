@@ -3,16 +3,16 @@ extends layout
 block content
   h1 Twitch Chat Experience
   i Displaying Kappas from the top 50 channels on twitch.tv
-  div.kappa-counter
+  div#kappa-counter
     | Kappa counter: 
-    b
+    b 0
   canvas(id="speedometer" width="400" height="400")
   ul#kappa-list
   script.
     var socket = io();
     var speedometer = new Speedometer();
     var list = document.getElementById('kappa-list');
-    var counter = document.querySelector('.kappa-counter b');
+    var counter = document.querySelector('#kappa-counter b');
     var kappas = 0;
     socket.on('kappa', function (data) {
         kappas++;
