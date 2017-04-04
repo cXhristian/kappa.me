@@ -1,4 +1,5 @@
 var https = require('https');
+var url = require('url');
 
 var Twitch = function() {
     this.api = 'https://api.twitch.tv/kraken/';
@@ -39,8 +40,10 @@ Twitch.prototype.generateUrl = function(type, options) {
     return this.api + type + '?' + params.join('&');
 };
 
-Twitch.prototype.request = function(url, callback) {
-    https.get(url, function(res) {
+Twitch.prototype.request = function(apiUrl, callback) {
+    var urlOptions = url.parse(apiUrl);
+    urlOptions.headers = {'Client-ID': 'ps6wftcgmnesos3hz4ns37qu2qqhia'};
+    https.get(urlOptions, function(res) {
         res.setEncoding('utf8');
         var body = '';
         res.on('data', function(chunk) {
