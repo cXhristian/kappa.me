@@ -87,15 +87,36 @@ Chat.prototype.message = function(from, to, message) {
 };
 
 Chat.prototype.emoteParser = function(message) {
+    var messageEmotes = {};
     for (var i = 0; i < emotes.length; i++) {
         if(emotes[i].id == 10) {
             // awful hack
             continue;
         }
-        var re = new RegExp(emotes[i].code,"g");
-        if(message.match(re)) {
-            message = message.replace(re, '<img src="https://static-cdn.jtvnw.net/emoticons/v1/' + emotes[i].id + '/1.0" alt="' + emotes[i].code + '">');
+        var indices = [];
+        var index = message.indexOf(emotes[i].code);
+        while(index !== -1) {
+            indices.push(index);
+            index = message.indexOf(emotes[i].code, index + 1);
         }
+        for(var b = 0; b < indices.length; b++) {
+            var index = indices[b];
+            var end = emotes[i].code.length;
+            if(messageEmotes[index] === undefined || messageEmotes[index].end < end) {
+                messageEmotes[index] = {
+                    emote: i,
+                    end: end
+                };
+            }
+        }
+    }
+    var offset = 0;
+    for(var start in messageEmotes) {
+        var messageEmote = messageEmotes[start];
+        start = Number(start);
+        var emoteMarkup = '<img src="https://static-cdn.jtvnw.net/emoticons/v1/' + emotes[messageEmote.emote].id + '/1.0" alt="' + emotes[messageEmote.emote].code + '">';
+        message = message.substring(0, start + offset) + emoteMarkup + message.substring(offset + start + messageEmote.end, message.length);
+        offset += emoteMarkup.length - messageEmote.end;
     }
     return message;
 };
